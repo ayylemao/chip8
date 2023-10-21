@@ -1,0 +1,12 @@
+.vscode/
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+Makefile
+build/
+chip8
+chip8_tests
+cmake_install.cmake
+gmon.out
+googletest/
+lib/
