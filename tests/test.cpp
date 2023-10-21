@@ -148,7 +148,7 @@ TEST_F(Chip8Test, TestADD_VxVy_NOF) {
 }
 
 
-TEST_F(Chip8Test, TestADD_VxVy_NOF) {
+TEST_F(Chip8Test, TestSUB_VxVy) {
     Byte RegA = 0xCA;
     Byte RegB = 0x12;
     memory.data[cpu.PC] = 0x8E;
@@ -158,6 +158,27 @@ TEST_F(Chip8Test, TestADD_VxVy_NOF) {
     cpu.execute(memory);
     EXPECT_EQ(cpu.V[0x0E], RegA - RegB);
     EXPECT_EQ(cpu.V[0x0F], 0x1);
+
+
+    RegA = 0xCA;
+    RegB = 0xCA;
+    memory.data[cpu.PC] = 0x8E;
+    memory.data[cpu.PC+1] = 0xC5;
+    cpu.V[0x0E] = RegA;
+    cpu.V[0x0C] = RegB;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0E], RegA - RegB);
+    EXPECT_EQ(cpu.V[0x0F], 0x0);
+
+    RegA = 0xA9;
+    RegB = 0xCA;
+    memory.data[cpu.PC] = 0x8E;
+    memory.data[cpu.PC+1] = 0xC5;
+    cpu.V[0x0E] = RegA;
+    cpu.V[0x0C] = RegB;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0E], 0xDF);
+    EXPECT_EQ(cpu.V[0x0F], 0x0);
 }
 
 int main(int argc, char **argv) {

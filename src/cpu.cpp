@@ -91,10 +91,16 @@ void CPU::execute(Memory& memory)
                 }
                 else
                 {
-                    V[0xF] = 0x1;
-                    V[(ins >> 8) & 0x000F] = (V[(ins >> 8) & 0x000F] + V[(ins >> 4) & 0x000F]) + 255;
+                    V[0xF] = 0x0;
+                    V[(ins >> 8) & 0x000F] = (V[(ins >> 8) & 0x000F] - V[(ins >> 4) & 0x000F]) + 256;
                 }
                 break;
+            case SHR_Vx:
+                if ((V[(ins >> 8) & 0x000F]) & 0x000F == 0x0001)
+                {
+                    V[0x0F] = 0x1;
+                   // TODO: DIVIDE BY TWO 
+                }
             default:
                 break;
         }

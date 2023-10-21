@@ -29,4 +29,5 @@ struct CPU
     static constexpr Word XOR_VxVy = 0x8003;
     static constexpr Word ADD_VxVy = 0x8004;
     static constexpr Word SUB_VxVy = 0x8005;
+    static constexpr Word SHR_Vx = 0x8006;
 };
