@@ -97,6 +97,9 @@ void CPU::execute(Memory& memory)
                 V[0x0F] = V[Vx] & 0x01;
                 V[Vx] >>= 1;
                 break;
+            case SUBN_VxVy:
+                V[0x0F] = V[Vy] > V[Vx] ? 1 : 0;
+                V[Vx] = V[Vy] - V[Vx];
             default:
                 break;
         }

@@ -22,22 +22,21 @@ protected:
     CPU cpu;
     Memory memory;
 };
-
-TEST_F(Chip8Test, TestFetch) {
+TEST_F(Chip8Test, Fetch) {
     memory.data[cpu.PC] = 0x1A;
     memory.data[cpu.PC + 1] = 0xFA;
     Word fetched = cpu.fetch(memory);
     EXPECT_EQ(fetched, 0x1AFA);
 }
 
-TEST_F(Chip8Test, TestJMPADDR) {
+TEST_F(Chip8Test, JMPADDR) {
     memory.data[cpu.PC] = 0x1F;
     memory.data[cpu.PC+1] = 0x4C;
     cpu.execute(memory);
     EXPECT_EQ(cpu.PC, 0x0F4C);
 }
 
-TEST_F(Chip8Test, TestSE_Vx) {
+TEST_F(Chip8Test, SE_Vx) {
     Word initial_PC = cpu.PC;
     memory.data[cpu.PC] = 0x3B;
     memory.data[cpu.PC+1] = 0x4C;
@@ -45,7 +44,7 @@ TEST_F(Chip8Test, TestSE_Vx) {
     cpu.execute(memory);
     EXPECT_EQ(cpu.PC, initial_PC+4);
 }
-TEST_F(Chip8Test, TestSNE_Vx) {
+TEST_F(Chip8Test, SNE_Vx) {
     Word initial_PC = cpu.PC;
     memory.data[cpu.PC] = 0x4B;
     memory.data[cpu.PC+1] = 0x8C;
@@ -53,7 +52,8 @@ TEST_F(Chip8Test, TestSNE_Vx) {
     cpu.execute(memory);
     EXPECT_EQ(cpu.PC, initial_PC+4);
 }
-TEST_F(Chip8Test, TestSE_VxVy) {
+
+TEST_F(Chip8Test, SE_VxVy) {
     Word initial_PC = cpu.PC;
     memory.data[cpu.PC] = 0x5B;
     memory.data[cpu.PC+1] = 0xC0;
@@ -63,7 +63,7 @@ TEST_F(Chip8Test, TestSE_VxVy) {
     EXPECT_EQ(cpu.PC, initial_PC+4);
 }
 
-TEST_F(Chip8Test, TestLD_Vx) {
+TEST_F(Chip8Test, LD_Vx) {
     memory.data[cpu.PC] = 0x6E;
     memory.data[cpu.PC+1] = 0xC0;
     cpu.execute(memory);
@@ -88,7 +88,7 @@ TEST_F(Chip8Test, ADD_Vx) {
     EXPECT_EQ(cpu.V[0xA], 0xE6);
 }
 
-TEST_F(Chip8Test, TestLD_VxVy) {
+TEST_F(Chip8Test, LD_VxVy) {
     memory.data[cpu.PC] = 0x8E;
     memory.data[cpu.PC+1] = 0xC0;
     cpu.V[0x0E] = 0x0;
@@ -96,8 +96,7 @@ TEST_F(Chip8Test, TestLD_VxVy) {
     cpu.execute(memory);
     EXPECT_EQ(cpu.V[0x0E], cpu.V[0x0C]);
 }
-
-TEST_F(Chip8Test, TestOR_VxVy) {
+TEST_F(Chip8Test, OR_VxVy) {
     memory.data[cpu.PC] = 0x8E;
     memory.data[cpu.PC+1] = 0xC1;
     cpu.V[0x0E] = 0xCA;
@@ -106,7 +105,7 @@ TEST_F(Chip8Test, TestOR_VxVy) {
     EXPECT_EQ(cpu.V[0x0E], 0xEA);
 }
 
-TEST_F(Chip8Test, TestAND_VxVy) {
+TEST_F(Chip8Test, AND_VxVy) {
     memory.data[cpu.PC] = 0x8E;
     memory.data[cpu.PC+1] = 0xC2;
     cpu.V[0x0E] = 0xCA;
@@ -115,7 +114,7 @@ TEST_F(Chip8Test, TestAND_VxVy) {
     EXPECT_EQ(cpu.V[0x0E], 0x8A);
 }
 
-TEST_F(Chip8Test, TestXOR_VxVy) {
+TEST_F(Chip8Test, XOR_VxVy) {
     memory.data[cpu.PC] = 0x8E;
     memory.data[cpu.PC+1] = 0xC3;
     cpu.V[0x0E] = 0xCA;
@@ -124,7 +123,7 @@ TEST_F(Chip8Test, TestXOR_VxVy) {
     EXPECT_EQ(cpu.V[0x0E], 0x60);
 }
 
-TEST_F(Chip8Test, TestADD_VxVy_NOF) {
+TEST_F(Chip8Test, ADD_VxVy_NOF) {
     Byte RegA = 0xCA;
     Byte RegB = 0x12;
     memory.data[cpu.PC] = 0x8E;
@@ -147,8 +146,7 @@ TEST_F(Chip8Test, TestADD_VxVy_NOF) {
     EXPECT_EQ(cpu.V[0x0F], 0x1);
 }
 
-
-TEST_F(Chip8Test, TestSUB_VxVy) {
+TEST_F(Chip8Test, SUB_VxVy) {
     Byte RegA = 0xCA;
     Byte RegB = 0x12;
     memory.data[cpu.PC] = 0x8E;
@@ -158,7 +156,6 @@ TEST_F(Chip8Test, TestSUB_VxVy) {
     cpu.execute(memory);
     EXPECT_EQ(cpu.V[0x0E], RegA - RegB);
     EXPECT_EQ(cpu.V[0x0F], 0x1);
-
 
     RegA = 0xCA;
     RegB = 0xCA;
@@ -182,10 +179,31 @@ TEST_F(Chip8Test, TestSUB_VxVy) {
 }
 
 
-TEST_F(Chip8Test, Test_SHR_Vx) {
+TEST_F(Chip8Test, SHR_Vx) {
     Byte RegA = 0x02;
     memory.data[cpu.PC] = 0x8E;
     memory.data[cpu.PC+1] = 0xC6;
+    cpu.V[0x0E] = RegA;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0E], 0x01);
+    EXPECT_EQ(cpu.V[0x0F], 0x0);
+
+    cpu.reset(memory);
+    memory.data[cpu.PC] = 0x8E;
+    memory.data[cpu.PC+1] = 0xC6;
+    RegA = 0xA5;
+    cpu.V[0x0E] = RegA;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0E], 0x52);
+    EXPECT_EQ(cpu.V[0x0F], 0x01);
+}
+
+TEST_F(Chip8Test, SUBN_VxVy) {
+    // TODO: WRITE TEST!
+    Byte RegA = 0x1A;
+    Byte RegB = 0x02;
+    memory.data[cpu.PC] = 0x8E;
+    memory.data[cpu.PC+1] = 0xC7;
     cpu.V[0x0E] = RegA;
     cpu.execute(memory);
     EXPECT_EQ(cpu.V[0x0E], 0x01);
