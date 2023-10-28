@@ -1,4 +1,5 @@
 #pragma once
+#include <random>
 #include "../include/utils.h"
 #include "../include/memory.h"
 
@@ -8,12 +9,14 @@ struct CPU
     static constexpr int NREG = 16;
     static constexpr int SMEM = 4096;
     Byte V[16];
-    Byte I;
+    Word I;
     Word PC;
     Byte SP;
     void reset(Memory& memory);
     Word fetch(Memory& memory);
     void execute(Memory& memory);
+    std::random_device rd;
+    Byte randByte();
 
     // OPCODES:
     static constexpr Word JP_ADDR = 0x1000;
@@ -32,4 +35,8 @@ struct CPU
     static constexpr Word SHR_Vx = 0x8006;
     static constexpr Word SUBN_VxVy = 0x8007;
     static constexpr Word SHL_Vx = 0x800E;
+    static constexpr Word SNE_VxVy = 0x9000;
+    static constexpr Word LD_I = 0xA000;
+    static constexpr Word JP_V0 = 0xB000;
+    static constexpr Word RND_Vx = 0xC000;
 };

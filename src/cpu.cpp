@@ -1,4 +1,5 @@
 #include "../include/cpu.h"
+#include "cpu.h"
 
 
 
@@ -23,11 +24,18 @@ Word CPU::fetch(Memory& memory)
     return data;
 };
 
+Byte CPU::randByte()
+{
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<Byte> distrib(0, 255);
+    return distrib(gen);
+}
+
 void CPU::execute(Memory& memory)
 {
     Word ins = fetch(memory);
-    Word Vx;
-    Word Vy;
+    Word Vx = (ins >> 8) & 0x000F;
+    Word Vy = (ins >> 4) & 0x000F;
     switch (ins & 0xF000)
     {
     case JP_ADDR:
@@ -35,7 +43,6 @@ void CPU::execute(Memory& memory)
         break;
     case SE_Vx:
     {
-        Word Vx = (ins >> 8) & 0x000F;
         if (V[Vx] == static_cast<Byte>(ins & 0x00FF))
         {
             PC++;
@@ -44,7 +51,6 @@ void CPU::execute(Memory& memory)
         break;
     }
     case SNE_Vx:
-        Vx = (ins >> 8) & 0x000F;
         if (V[Vx] != static_cast<Byte>(ins & 0x00FF))
         {
             PC++;
@@ -52,8 +58,6 @@ void CPU::execute(Memory& memory)
         }
         break;
     case SE_VxVy:
-        Vx = (ins >> 8) & 0x000F;
-        Vy = (ins >> 4) & 0x000F;
         if (V[(ins >> 8) & 0x000F] == V[Vy])
         {
             PC++;
@@ -61,16 +65,12 @@ void CPU::execute(Memory& memory)
         }
         break;
     case LD_Vx:
-        Vx = (ins >> 8) & 0x000F;
         V[Vx] = static_cast<Byte>(ins & 0x00FF);
         break;
     case ADD_Vx:
-        Vx = (ins >> 8) & 0x000F;
         V[Vx] = V[Vx] + (ins & 0x00FF) % 256;
         break;
     case COMP_INS:
-        Vx = (ins >> 8) & 0x000F;
-        Vy = (ins >> 4) & 0x000F;
         switch (ins & 0xF00F)
         {
             case LD_VxVy:
@@ -104,11 +104,27 @@ void CPU::execute(Memory& memory)
             case SHL_Vx:
                 V[0x0F] = (V[Vx] & 0x80) >> 7;
                 V[Vx] = V[Vx] << 1;
+                break;
             default:
                 break;
         }
-    
-
+        break;
+    case SNE_VxVy:
+        if (V[Vx] != V[Vy])
+        {
+            PC++;
+            PC++;
+        }
+        break;
+    case LD_I:
+        I = ins & 0x0FFF;
+        break;
+    case JP_V0:
+        PC = (ins & 0x0FFF) + V[0x0];
+        break;
+    case RND_Vx:
+        V[Vx] = randByte() & static_cast<Byte>(ins & 0x00FF);
+        break;
     default:
         break;
     }

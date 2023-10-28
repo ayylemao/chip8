@@ -239,6 +239,54 @@ TEST_F(Chip8Test, SHL_Vx) {
     EXPECT_EQ(cpu.V[0x0A], 86);
     EXPECT_EQ(cpu.V[0x0F], 0x0);
 }
+
+TEST_F(Chip8Test, SNE_VxVy) {
+    Byte RegA = 0xAB;
+    Byte RegB = 0xAB;
+    Word orig_pc = cpu.PC;
+    memory.data[cpu.PC] = 0x9A;
+    memory.data[cpu.PC+1] = 0xB0;
+    cpu.V[0x0A] = RegA;
+    cpu.V[0x0B] = RegB;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.PC, orig_pc + 2);
+
+    cpu.reset(memory);
+    RegA = 0xAB;
+    RegB = 0xAF;
+    orig_pc = cpu.PC;
+    memory.data[cpu.PC] = 0x9A;
+    memory.data[cpu.PC+1] = 0xB0;
+    cpu.V[0x0A] = RegA;
+    cpu.V[0x0B] = RegB;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.PC, orig_pc+4);
+}
+
+TEST_F(Chip8Test, LD_I) {
+    memory.data[cpu.PC] = 0xAA;
+    memory.data[cpu.PC+1] = 0xBC;
+    cpu.execute(memory);
+
+    EXPECT_EQ(cpu.I, 0xABC);
+}
+
+TEST_F(Chip8Test, JP_V0) {
+    memory.data[cpu.PC] = 0xBA;
+    memory.data[cpu.PC+1] = 0xBC;
+    cpu.V[0x0] = 0x09;
+    cpu.execute(memory);
+
+    EXPECT_EQ(cpu.PC, 0x09 + 0xABC);
+}
+
+TEST_F(Chip8Test, TestRandType) {
+    Byte rand = cpu.randByte();
+    EXPECT_EQ(1, 1);
+}
+
+
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
