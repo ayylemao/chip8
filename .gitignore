@@ -9,4 +9,5 @@ chip8_tests
 cmake_install.cmake
 gmon.out
 googletest/
+googletest/
 lib/

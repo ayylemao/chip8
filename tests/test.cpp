@@ -181,6 +181,26 @@ TEST_F(Chip8Test, TestSUB_VxVy) {
     EXPECT_EQ(cpu.V[0x0F], 0x0);
 }
 
+
+TEST_F(Chip8Test, Test_SHR_Vx) {
+    Byte RegA = 0x02;
+    memory.data[cpu.PC] = 0x8E;
+    memory.data[cpu.PC+1] = 0xC6;
+    cpu.V[0x0E] = RegA;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0E], 0x01);
+    EXPECT_EQ(cpu.V[0x0F], 0x0);
+
+    cpu.reset(memory);
+    memory.data[cpu.PC] = 0x8E;
+    memory.data[cpu.PC+1] = 0xC6;
+    RegA = 0xA5;
+    cpu.V[0x0E] = RegA;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0E], 0x52);
+    EXPECT_EQ(cpu.V[0x0F], 0x01);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
