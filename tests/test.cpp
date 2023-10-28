@@ -199,26 +199,46 @@ TEST_F(Chip8Test, SHR_Vx) {
 }
 
 TEST_F(Chip8Test, SUBN_VxVy) {
-    // TODO: WRITE TEST!
-    Byte RegA = 0x1A;
-    Byte RegB = 0x02;
-    memory.data[cpu.PC] = 0x8E;
-    memory.data[cpu.PC+1] = 0xC7;
-    cpu.V[0x0E] = RegA;
+    Byte RegA = 0x0A;
+    Byte RegB = 0xAC;
+    memory.data[cpu.PC] = 0x8A;
+    memory.data[cpu.PC+1] = 0xB7;
+    cpu.V[0x0A] = RegA;
+    cpu.V[0x0B] = RegB;
     cpu.execute(memory);
-    EXPECT_EQ(cpu.V[0x0E], 0x01);
-    EXPECT_EQ(cpu.V[0x0F], 0x0);
+    EXPECT_EQ(cpu.V[0x0A], 172 - 10);
+    EXPECT_EQ(cpu.V[0x0F], 0x1);
 
     cpu.reset(memory);
-    memory.data[cpu.PC] = 0x8E;
-    memory.data[cpu.PC+1] = 0xC6;
-    RegA = 0xA5;
-    cpu.V[0x0E] = RegA;
+    RegA = 0xAC;
+    RegB = 0x0A;
+    memory.data[cpu.PC] = 0x8A;
+    memory.data[cpu.PC+1] = 0xB7;
+    cpu.V[0x0A] = RegA;
+    cpu.V[0x0B] = RegB;
     cpu.execute(memory);
-    EXPECT_EQ(cpu.V[0x0E], 0x52);
-    EXPECT_EQ(cpu.V[0x0F], 0x01);
+    EXPECT_EQ(cpu.V[0x0A], 10 - 172 + 256);
+    EXPECT_EQ(cpu.V[0x0F], 0x0);
 }
 
+TEST_F(Chip8Test, SHL_Vx) {
+    Byte RegA = 0xAB;
+    memory.data[cpu.PC] = 0x8A;
+    memory.data[cpu.PC+1] = 0xBE;
+    cpu.V[0x0A] = RegA;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0A], 86);
+    EXPECT_EQ(cpu.V[0x0F], 0x1);
+
+    cpu.reset(memory);
+    RegA = 0x2B;
+    memory.data[cpu.PC] = 0x8A;
+    memory.data[cpu.PC+1] = 0xBE;
+    cpu.V[0x0A] = RegA;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0A], 86);
+    EXPECT_EQ(cpu.V[0x0F], 0x0);
+}
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
