@@ -46,8 +46,14 @@ void CPU::execute(Memory& memory)
             // Clear the display.
             return;
         case RET:
-            // TODO
-            // The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
+            if (SP == 0)
+            {
+                std::cout << "Stack Underflow at PC ";
+                printWord(PC);
+                std::_Exit(EXIT_FAILURE);
+            }
+            SP--;
+            PC = Stack[SP];
             return;
         default:
             break;
@@ -59,8 +65,15 @@ void CPU::execute(Memory& memory)
         PC = ins & 0xFFF;
         break;
     case CALL_addr:
-        // TODO
-        // The interpreter increments the stack pointer, then puts the current PC on the top of the stack. The PC is then set to nnn.
+        if (SP == 15)
+        {
+            std::cout << "Stack Overflow at PC ";
+            printWord(PC);
+            std::_Exit(EXIT_FAILURE);
+        }
+        Stack[SP] = PC;
+        SP++;
+        PC = (ins & 0x0FFF);
         break;
     case SE_Vx:
     {

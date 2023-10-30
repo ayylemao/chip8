@@ -285,7 +285,23 @@ TEST_F(Chip8Test, TestRandType) {
     EXPECT_EQ(1, 1);
 }
 
-
+TEST_F(Chip8Test, SuboutineTest) {
+    memory.data[cpu.PC] = 0x2A;
+    memory.data[cpu.PC+1] = 0x00;
+    memory.data[0x0A00] = 0x7A;
+    memory.data[0x0A01] = 0x69;
+    memory.data[0x0A02] = 0x00;
+    memory.data[0x0A03] = 0xEE;
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.PC, 0x0A00);
+    EXPECT_EQ(cpu.Stack[cpu.SP-1], 0x0200 + 2);
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0x0A], 0x69);
+    EXPECT_EQ(cpu.PC, 0x0A00 + 2);
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.PC, 0x200 + 2);
+    EXPECT_EQ(cpu.SP, 0x0);
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
