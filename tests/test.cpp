@@ -303,6 +303,18 @@ TEST_F(Chip8Test, SuboutineTest) {
     EXPECT_EQ(cpu.SP, 0x0);
 }
 
+TEST_F(Chip8Test, SpriteldTest) {
+    cpu.reset(memory);
+    cpu.loadSprites(memory);
+    EXPECT_EQ(memory[32], 0x90);
+    EXPECT_EQ(memory[33], 0x90);
+    EXPECT_EQ(memory[34], 0xF0);
+    cpu.display[0][16] = 1;
+    EXPECT_EQ(cpu.display[0][15], 0);
+    EXPECT_EQ(cpu.display[0][16], 1);
+
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

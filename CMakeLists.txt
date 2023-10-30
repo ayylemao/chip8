@@ -7,7 +7,10 @@ project(chip8)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Add the executable
-add_executable(chip8 src/main.cpp src/cpu.cpp src/memory.cpp src/utils.cpp)
+add_executable(chip8 src/main.cpp src/cpu.cpp src/memory.cpp src/utils.cpp src/renderer.cpp)
+
+find_package(SFML 2.5 COMPONENTS graphics audio window system REQUIRED)
+target_link_libraries(chip8 sfml-graphics sfml-audio sfml-window sfml-system)
 
 # Enable testing
 enable_testing()
@@ -16,7 +19,7 @@ enable_testing()
 add_subdirectory(googletest)
 
 # Add test executable
-add_executable(chip8_tests tests/test.cpp src/cpu.cpp src/memory.cpp src/utils.cpp)
+add_executable(chip8_tests tests/test.cpp src/cpu.cpp src/memory.cpp src/utils.cpp src/renderer.cpp)
 
 # Link test executable against gtest libraries
 target_link_libraries(chip8_tests gtest gtest_main)

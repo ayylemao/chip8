@@ -12,7 +12,25 @@ void CPU::reset(Memory& memory)
     PC = 0x200;
     SP = 0x0;
     memory.init();
+    for (int disp_x = 0; disp_x < DISPN_X; disp_x++)
+    {
+        for (int disp_y = 0; disp_y < DISPN_Y; disp_y++)
+        {
+            display[disp_y][disp_x] = false;
+        }
+    }
 };
+
+void CPU::loadSprites(Memory& memory)
+{
+    for (int row = 0; row < 16; row++)
+    {
+        for (int col = 0; col < 8; col++)
+        {
+            memory[row * 8 + col] = characters[row][col];
+        }
+    }
+}
     
 Word CPU::fetch(Memory& memory)
 {
