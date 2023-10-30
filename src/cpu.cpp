@@ -23,12 +23,9 @@ void CPU::reset(Memory& memory)
 
 void CPU::loadSprites(Memory& memory)
 {
-    for (int row = 0; row < 16; row++)
+    for (int byte = 0; byte < 128; byte++)
     {
-        for (int col = 0; col < 8; col++)
-        {
-            memory[row * 8 + col] = characters[row][col];
-        }
+        memory[byte] = characters[byte];
     }
 }
     
@@ -54,6 +51,11 @@ void CPU::execute(Memory& memory)
     Word ins = fetch(memory);
     Word Vx = (ins >> 8) & 0x000F;
     Word Vy = (ins >> 4) & 0x000F;
+    Byte xcoord;
+    Byte ycoord;
+    Word N;
+    Byte pixelByte;
+    bool pixel;
 
     switch (ins)
     {
@@ -178,6 +180,36 @@ void CPU::execute(Memory& memory)
         V[Vx] = randByte() & static_cast<Byte>(ins & 0x00FF);
         break;
     case DRW_VxVy:
+        xcoord = V[Vx] % DISPN_X;
+        ycoord = V[Vy] % DISPN_Y;
+        V[0x0F] = 0;
+        N = ins & 0x000F;
+        for (int row = 0; row < N; row++)
+        {
+            if (ycoord + row >= DISPN_Y)
+            {
+                break;
+            }
+            pixelByte = memory[I + row];
+            for (int x = 7; x >= 0; --x)
+            {
+                pixel = (row & (1 << i)) != 0;
+                if (xcoord + x >= DISPN_X)
+                {
+                    break;
+                }
+
+                if ((pixel == true) & (display[ycoord + row][xcoord + x] == true))
+                {
+                    V[0xF] = 1;
+                }
+                else if ((pixel == true) & (display[ycoord + row][xcoord + x] == false))
+                {
+                    display[ycoord + row][xcoord + x] = true;
+                }
+            }
+        }
+
         // TODO:
         // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
         break;

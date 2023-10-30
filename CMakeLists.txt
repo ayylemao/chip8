@@ -21,8 +21,8 @@ add_subdirectory(googletest)
 # Add test executable
 add_executable(chip8_tests tests/test.cpp src/cpu.cpp src/memory.cpp src/utils.cpp src/renderer.cpp)
 
-# Link test executable against gtest libraries
-target_link_libraries(chip8_tests gtest gtest_main)
+# Link test executable against gtest libraries AND the necessary SFML libraries
+target_link_libraries(chip8_tests gtest gtest_main sfml-graphics sfml-audio sfml-window sfml-system)
 
 # Add the tests to CTest
 add_test(NAME chip8_tests COMMAND chip8_tests)

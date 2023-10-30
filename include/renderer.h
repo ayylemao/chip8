@@ -4,8 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include "../include/cpu.h"
 
-
-
 class Renderer
 {
     public:
