@@ -36,10 +36,31 @@ void CPU::execute(Memory& memory)
     Word ins = fetch(memory);
     Word Vx = (ins >> 8) & 0x000F;
     Word Vy = (ins >> 4) & 0x000F;
+
+    switch (ins)
+    {
+        case SYS_addr:
+            return;
+        case CLS:
+            // TODO
+            // Clear the display.
+            return;
+        case RET:
+            // TODO
+            // The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
+            return;
+        default:
+            break;
+    }
+
     switch (ins & 0xF000)
     {
     case JP_ADDR:
         PC = ins & 0xFFF;
+        break;
+    case CALL_addr:
+        // TODO
+        // The interpreter increments the stack pointer, then puts the current PC on the top of the stack. The PC is then set to nnn.
         break;
     case SE_Vx:
     {
@@ -125,6 +146,70 @@ void CPU::execute(Memory& memory)
     case RND_Vx:
         V[Vx] = randByte() & static_cast<Byte>(ins & 0x00FF);
         break;
+    case DRW_VxVy:
+        // TODO:
+        // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
+        break;
+    case KEY_OPS:
+        switch (ins & 0xF00F)
+        {
+        case SKP_Vx:
+            // TODO:
+            //  Skip next instruction if key with the value of Vx is pressed.
+            break;
+        case SKNP_Vx:
+            // TODO:
+            // Skip next instruction if key with the value of Vx is not pressed. 
+            break;
+        default:
+            break;
+        }
+        break;
+    case DTST_OPS:
+        switch (ins & 0xF0FF)
+        {
+        case LD_VxDT:
+            // TODO:
+            // Set Vx = delay timer value.
+            break;
+        case LD_Vx_K:
+            // TODO:
+            // Wait for a key press, store the value of the key in Vx.
+            break;
+        case LD_DTVx:
+            // TODO:
+            // Set delay timer = Vx.
+            break;
+        case LD_STVx:
+            // TODO:
+            // Set sound timer = Vx.
+            break;
+        case ADD_IVx:
+            // TODO:
+            // Set I = I + Vx.
+            break;
+        case LD_FVx:
+            // TODO:
+            // Set I = location of sprite for digit Vx.
+            break;
+        case LD_BVx:
+            // TODO:
+            // Store BCD representation of Vx in memory locations I, I+1, and I+2.
+            break;
+        case LD_STO_IVx:
+            // TODO:
+            // Store registers V0 through Vx in memory starting at location I.
+            break;
+        case LD_STO_VxI:
+            // TODO:
+            // Read registers V0 through Vx from memory starting at location I.
+            break;
+        default:
+            break;
+        }
+
+    case LD_VxDT:
+        V[Vx] = DT;
     default:
         break;
     }
