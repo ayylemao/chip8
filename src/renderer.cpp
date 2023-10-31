@@ -19,7 +19,7 @@ void Renderer::drawBuffer()
     {
         if (cpu.display[y][x] == true)
         {
-            image.setPixel(x, y, sf::Color::White);
+            image.setPixel(x, y, sf::Color::Yellow);
         }
         else
         {

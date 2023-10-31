@@ -315,6 +315,56 @@ TEST_F(Chip8Test, SpriteldTest) {
 
 }
 
+TEST_F(Chip8Test, TestDRW) {
+    cpu.reset(memory);
+    cpu.loadSprites(memory);
+    // Sprite Adress
+    memory[cpu.PC] = 0xA0;
+    memory[cpu.PC+1] = 0x0F;
+    // sprite x coord
+    memory[cpu.PC+2] = 0x6A;
+    memory[cpu.PC+3] = 0x07;
+    // sprite y coord
+    memory[cpu.PC+4] = 0x6B;
+    memory[cpu.PC+5] = 0x020;
+    // draw sprite D at chord Vx, Vy N bytes long
+    memory[cpu.PC+6] = 0xDA;
+    memory[cpu.PC+7] = 0xB8;
+    // clear screen
+    memory[cpu.PC+8] = 0x00;
+    memory[cpu.PC+9] = 0xE0;
+
+    // Load sprite adress into register I
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.I, 0x000F);
+    // Load coord x into VA
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0xA], 0x07);
+    // Load coord y into VB
+    cpu.execute(memory);
+    EXPECT_EQ(cpu.V[0xB], 0x20);
+    cpu.execute(memory);
+    //for (int y = 0; y < cpu.DISPN_Y; y++)
+    //{
+    //    std::cout << '\n';
+    //    for (int x = 0; x < cpu.DISPN_X; x++)
+    //    {
+    //        std::cout << cpu.display[y][x] << ' '; 
+    //    }
+    //}
+    cpu.execute(memory);
+    for (int y = 0; y < cpu.DISPN_Y; y++)
+    {
+        std::cout << '\n';
+        for (int x = 0; x < cpu.DISPN_X; x++)
+        {
+            std::cout << cpu.display[y][x] << ' '; 
+        }
+    }
+    
+}
+
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

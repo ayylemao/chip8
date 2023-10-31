@@ -18,6 +18,7 @@ struct CPU
     Byte SP;
     Byte DT;
     Byte ST;
+    bool redraw;
     void reset(Memory& memory);
     Word fetch(Memory& memory);
     void execute(Memory& memory);

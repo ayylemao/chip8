@@ -11,6 +11,8 @@ void CPU::reset(Memory& memory)
     }
     PC = 0x200;
     SP = 0x0;
+    I = 0x0;
+    redraw = false;
     memory.init();
     for (int disp_x = 0; disp_x < DISPN_X; disp_x++)
     {
@@ -64,6 +66,14 @@ void CPU::execute(Memory& memory)
         case CLS:
             // TODO
             // Clear the display.
+            redraw = false;
+            for (int y = 0; y < DISPN_Y; y++)
+            {
+                for (int x = 0; x < DISPN_X; x++)
+                {
+                    display[y][x] = 0;
+                }
+            }
             return;
         case RET:
             if (SP == 0)
@@ -180,32 +190,24 @@ void CPU::execute(Memory& memory)
         V[Vx] = randByte() & static_cast<Byte>(ins & 0x00FF);
         break;
     case DRW_VxVy:
+        redraw = true;
         xcoord = V[Vx] % DISPN_X;
         ycoord = V[Vy] % DISPN_Y;
         V[0x0F] = 0;
         N = ins & 0x000F;
         for (int row = 0; row < N; row++)
         {
-            if (ycoord + row >= DISPN_Y)
-            {
-                break;
-            }
             pixelByte = memory[I + row];
             for (int x = 7; x >= 0; --x)
             {
-                pixel = (row & (1 << i)) != 0;
-                if (xcoord + x >= DISPN_X)
+                pixel = (pixelByte & (1 << x)) != 0;
+                if (pixel)
                 {
-                    break;
-                }
-
-                if ((pixel == true) & (display[ycoord + row][xcoord + x] == true))
-                {
-                    V[0xF] = 1;
-                }
-                else if ((pixel == true) & (display[ycoord + row][xcoord + x] == false))
-                {
-                    display[ycoord + row][xcoord + x] = true;
+                    if (display[ycoord + row][xcoord + 7 - x]) 
+                    {
+                        V[0xF] = 1;
+                    }
+                    display[(ycoord + row) % DISPN_Y][(xcoord + 7 - x) % DISPN_X] ^= true;
                 }
             }
         }
