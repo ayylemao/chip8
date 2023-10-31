@@ -64,7 +64,6 @@ void CPU::execute(Memory& memory)
         case SYS_addr:
             return;
         case CLS:
-            // TODO
             // Clear the display.
             redraw = false;
             for (int y = 0; y < DISPN_Y; y++)
@@ -212,8 +211,6 @@ void CPU::execute(Memory& memory)
             }
         }
 
-        // TODO:
-        // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
         break;
     case KEY_OPS:
         switch (ins & 0xF00F)

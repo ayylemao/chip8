@@ -21,7 +21,7 @@ int main()
 
     cpu.reset(memory);
     cpu.loadSprites(memory);
-    std::vector<Byte> rom = utils::loadROM("/home/matthias/projects/chip8/roms/2-ibm-logo.ch8");
+    std::vector<Byte> rom = utils::loadROM("/home/matthias/projects/chip8/roms/1-chip8-logo.ch8");
 
     for (int addr = 0; addr < 260; addr++)
     {
@@ -40,8 +40,8 @@ int main()
         if (clock.getElapsedTime().asSeconds() >= 0.5)
         {
             clock.restart();  // Reset the clock
-            printByte(memory[cpu.PC]);
-            printByte(memory[cpu.PC+1]);
+            utils::printOpcode(memory[cpu.PC], memory[cpu.PC+1]);
+            utils::printWord(cpu.I);
             cpu.execute(memory);
         }
         sf::Texture texture;

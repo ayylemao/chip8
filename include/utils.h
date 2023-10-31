@@ -14,6 +14,7 @@ using u32 = unsigned int;
 namespace utils
 {
     void printByte(Byte value);
+    void printOpcode(Byte value1, Byte value2);
     void printWord(Word value);
     std::vector<Byte> loadROM(const std::string& filename);
 }
