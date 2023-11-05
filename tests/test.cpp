@@ -344,14 +344,7 @@ TEST_F(Chip8Test, TestDRW) {
     cpu.execute(memory);
     EXPECT_EQ(cpu.V[0xB], 0x20);
     cpu.execute(memory);
-    //for (int y = 0; y < cpu.DISPN_Y; y++)
-    //{
-    //    std::cout << '\n';
-    //    for (int x = 0; x < cpu.DISPN_X; x++)
-    //    {
-    //        std::cout << cpu.display[y][x] << ' '; 
-    //    }
-    //}
+
     cpu.execute(memory);
     for (int y = 0; y < cpu.DISPN_Y; y++)
     {
@@ -361,8 +354,8 @@ TEST_F(Chip8Test, TestDRW) {
             std::cout << cpu.display[y][x] << ' '; 
         }
     }
-    
 }
+
 
 
 int main(int argc, char **argv) {

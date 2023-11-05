@@ -12,6 +12,12 @@ add_executable(chip8 src/main.cpp src/cpu.cpp src/memory.cpp src/utils.cpp src/r
 find_package(SFML 2.5 COMPONENTS graphics audio window system REQUIRED)
 target_link_libraries(chip8 sfml-graphics sfml-audio sfml-window sfml-system)
 
+# Enable profiling with gprof for the chip8 target
+set_target_properties(chip8 PROPERTIES
+    COMPILE_FLAGS "-pg"
+    LINK_FLAGS "-pg"
+)
+
 # Enable testing
 enable_testing()
 

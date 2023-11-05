@@ -18,15 +18,22 @@ int main()
     cpu.reset(memory);
     sf::RenderWindow window(sf::VideoMode(windowX, windowY), "SFML works!");
     Renderer renderer(window, cpu);
-
+    static constexpr Word ROM_OFFSET = 0x200;
     cpu.reset(memory);
     cpu.loadSprites(memory);
-    std::vector<Byte> rom = utils::loadROM("/home/matthias/projects/chip8/roms/1-chip8-logo.ch8");
+    std::vector<Byte> rom = utils::loadROM(
+        "/home/matthias/projects/chip8/roms/4-flags.ch8"
+        );
 
-    for (int addr = 0; addr < 260; addr++)
+    for (int addr = 0; addr < rom.size(); addr++)
     {
-        memory[0x200 + addr] = rom[addr];
+        memory[ROM_OFFSET + addr] = rom[addr];
     }
+    cpu.PC = ROM_OFFSET;
+    //for (int i = 0; i<10000; i++)
+    //{
+    //    cpu.execute(memory);
+    //}
 
     while (window.isOpen())
     {
@@ -37,11 +44,12 @@ int main()
                 window.close();
         }
         window.clear();
-        if (clock.getElapsedTime().asSeconds() >= 0.5)
+        if (clock.getElapsedTime().asSeconds() >= 0.001)
         {
             clock.restart();  // Reset the clock
-            utils::printOpcode(memory[cpu.PC], memory[cpu.PC+1]);
-            utils::printWord(cpu.I);
+            //utils::printOpcode(memory[cpu.PC], memory[cpu.PC+1]);
+            //std::cout << '\n';
+            //utils::printWord(cpu.I);
             cpu.execute(memory);
         }
         sf::Texture texture;

@@ -9,10 +9,10 @@ Renderer::Renderer(sf::RenderWindow &in_window, CPU &in_cpu)
 
 void Renderer::drawBuffer()
 {
-    for (int x = 0; x < cpu.DISPN_X; x++)
-    {
-        cpu.display[0][x] = 1;
-    }
+    //for (int x = 0; x < cpu.DISPN_X; x++)
+    //{
+    //    cpu.display[0][x] = 1;
+    //}
 
     for (int x = 0; x < cpu.DISPN_X; x++)
         for (int y = 0; y < cpu.DISPN_Y; y++)

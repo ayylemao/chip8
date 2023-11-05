@@ -55,6 +55,7 @@ void CPU::execute(Memory& memory)
     Word Vy = (ins >> 4) & 0x000F;
     Byte xcoord;
     Byte ycoord;
+    Byte carry;
     Word N;
     Byte pixelByte;
     bool pixel;
@@ -65,7 +66,7 @@ void CPU::execute(Memory& memory)
             return;
         case CLS:
             // Clear the display.
-            redraw = false;
+            redraw = true;
             for (int y = 0; y < DISPN_Y; y++)
             {
                 for (int x = 0; x < DISPN_X; x++)
@@ -149,24 +150,29 @@ void CPU::execute(Memory& memory)
                 V[Vx] = V[Vx] ^ V[Vy];
                 break;
             case ADD_VxVy:
-                V[0x0F] = V[Vx] + V[Vy] > 0xFF ? 1 : 0;
-                V[Vx] = (V[Vx] + V[Vy]);
+                carry =  (V[Vx] + V[Vy]) > 255 ? 1 : 0;
+                V[Vx] = V[Vx] + V[Vy];
+                V[0xF] = carry;
                 break;
             case SUB_VxVy:
-                V[0xF] = V[Vx] > V[Vy] ? 1 : 0;
+                carry =  (V[Vx] >= V[Vy])  ? 1 : 0;
                 V[Vx] = V[Vx] - V[Vy];
+                V[0xF] = carry;
+
                 break;
             case SHR_Vx:
-                V[0x0F] = V[Vx] & 0x01;
+                carry = V[Vx] & 0x01;
                 V[Vx] >>= 1;
+                V[0x0F] = carry;
                 break;
             case SUBN_VxVy:
-                V[0x0F] = V[Vy] > V[Vx] ? 1 : 0;
                 V[Vx] = V[Vy] - V[Vx];
+                V[0x0F] = V[Vy] > V[Vx] ? 1 : 0;
                 break;
             case SHL_Vx:
-                V[0x0F] = (V[Vx] & 0x80) >> 7;
+                carry = (V[Vx] & 0x80) >> 7;
                 V[Vx] = V[Vx] << 1;
+                V[0x0F] = carry;
                 break;
             default:
                 break;
@@ -218,10 +224,12 @@ void CPU::execute(Memory& memory)
         case SKP_Vx:
             // TODO:
             //  Skip next instruction if key with the value of Vx is pressed.
+            std::cout << "Not Implemented SKP_Vx\n";
             break;
         case SKNP_Vx:
             // TODO:
             // Skip next instruction if key with the value of Vx is not pressed. 
+            std::cout << "Not Implemented SKNP_Vx\n";
             break;
         default:
             break;
@@ -233,43 +241,59 @@ void CPU::execute(Memory& memory)
         case LD_VxDT:
             // TODO:
             // Set Vx = delay timer value.
+            std::cout << "Not Implemented LD_VxDT\n";
             break;
         case LD_Vx_K:
             // TODO:
             // Wait for a key press, store the value of the key in Vx.
+            std::cout << "Not Implemented LD_Vx_K\n";
             break;
         case LD_DTVx:
             // TODO:
             // Set delay timer = Vx.
+            std::cout << "Not Implemented LD_DTVx\n";
             break;
         case LD_STVx:
             // TODO:
             // Set sound timer = Vx.
+            std::cout << "Not Implemented LD_STVx\n";
             break;
         case ADD_IVx:
             // TODO:
             // Set I = I + Vx.
+            I = I + V[Vx];
             break;
         case LD_FVx:
             // TODO:
             // Set I = location of sprite for digit Vx.
+            std::cout << "Not Implemented LD_FVx\n";
             break;
         case LD_BVx:
             // TODO:
             // Store BCD representation of Vx in memory locations I, I+1, and I+2.
+            memory[I] = V[Vx] / 100;
+            memory[I + 1] = (V[Vx] / 10) % 10;
+            memory[I + 2] = (V[Vx] % 10);
             break;
         case LD_STO_IVx:
             // TODO:
             // Store registers V0 through Vx in memory starting at location I.
+            for (int i = 0; i<= Vx; i++)
+            {
+                memory[I+i] = V[i];
+            }
             break;
         case LD_STO_VxI:
-            // TODO:
             // Read registers V0 through Vx from memory starting at location I.
+            for (int i = 0; i <= Vx; i++)
+            {
+                V[i] = memory[I+i];
+            }
             break;
         default:
             break;
         }
-
+        break;
     case LD_VxDT:
         V[Vx] = DT;
     default:
