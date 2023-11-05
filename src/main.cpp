@@ -8,32 +8,32 @@
 
 using namespace utils;
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <ROM PATH>\n";
+        return 1;
+    }
+    std::string filepath = argv[1];
     const int windowX = 640;
     const int windowY = 320;
     sf::Clock clock;  // Initialize a clock to measure elapsed time
     CPU cpu;
     Memory memory;
     cpu.reset(memory);
-    sf::RenderWindow window(sf::VideoMode(windowX, windowY), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(windowX, windowY), "CHIP-8");
     Renderer renderer(window, cpu);
     static constexpr Word ROM_OFFSET = 0x200;
     cpu.reset(memory);
     cpu.loadSprites(memory);
-    std::vector<Byte> rom = utils::loadROM(
-        "/home/matthias/projects/chip8/roms/6-keypad.ch8"
-        );
+    std::vector<Byte> rom = utils::loadROM(filepath);
 
     for (int addr = 0; addr < rom.size(); addr++)
     {
         memory[ROM_OFFSET + addr] = rom[addr];
     }
     cpu.PC = ROM_OFFSET;
-    //for (int i = 0; i<10000; i++)
-    //{
-    //    cpu.execute(memory);
-    //}
 
     while (window.isOpen())
     {
@@ -49,7 +49,6 @@ int main()
             clock.restart();  // Reset the clock
             //utils::printOpcode(memory[cpu.PC], memory[cpu.PC+1]);
             //std::cout << '\n';
-            //utils::printWord(cpu.I);
             cpu.execute(memory);
         }
         // KeyPresses

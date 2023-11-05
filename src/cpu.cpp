@@ -61,9 +61,16 @@ void CPU::execute(Memory& memory)
     Byte pixelByte;
     bool pixel;
     ticks += 1;
-    if ((ticks % 9 == 0) & (DT > 0))
+    if ((ticks % 9 == 0))
     {
-        DT -= 1;
+        if (DT > 0)
+        {
+            DT -= 1;
+        }
+        if (ST > 0)
+        {
+            ST -= 1;
+        }
     }
 
     switch (ins)
@@ -148,12 +155,15 @@ void CPU::execute(Memory& memory)
                 break;
             case OR_VxVy:
                 V[Vx] = V[Vx] | V[Vy];
+                V[0xF] = 0;
                 break; 
             case AND_VxVy:
                 V[Vx] = V[Vx] & V[Vy];
+                V[0xF] = 0;
                 break;
             case XOR_VxVy:
                 V[Vx] = V[Vx] ^ V[Vy];
+                V[0xF] = 0;
                 break;
             case ADD_VxVy:
                 carry =  (V[Vx] + V[Vy]) > 255 ? 1 : 0;
@@ -167,6 +177,7 @@ void CPU::execute(Memory& memory)
 
                 break;
             case SHR_Vx:
+                V[Vx] = V[Vy];
                 carry = V[Vx] & 0x01;
                 V[Vx] >>= 1;
                 V[0x0F] = carry;
@@ -176,6 +187,7 @@ void CPU::execute(Memory& memory)
                 V[0x0F] = V[Vy] > V[Vx] ? 1 : 0;
                 break;
             case SHL_Vx:
+                V[Vx] = V[Vy];
                 carry = (V[Vx] & 0x80) >> 7;
                 V[Vx] = V[Vx] << 1;
                 V[0x0F] = carry;
@@ -267,7 +279,6 @@ void CPU::execute(Memory& memory)
                 if (keyboard[i])
                 {
                     V[Vx] = i;
-                    break;
                 }
             }
             PC--;
@@ -278,18 +289,20 @@ void CPU::execute(Memory& memory)
             DT = V[Vx];
             break;
         case LD_STVx:
-            // TODO:
             // Set sound timer = Vx.
-            std::cout << "Not Implemented LD_STVx\n";
+            ST = V[Vx];
+            //std::cout << "Not Implemented LD_STVx\n";
             break;
         case ADD_IVx:
             // Set I = I + Vx.
             I = I + V[Vx];
             break;
         case LD_FVx:
-            // TODO:
             // Set I = location of sprite for digit Vx.
-            std::cout << "Not Implemented LD_FVx\n";
+            if (V[Vx] < 16)
+            {
+                I = memory[8 * V[Vx]];
+            }
             break;
         case LD_BVx:
             // Store BCD representation of Vx in memory locations I, I+1, and I+2.
