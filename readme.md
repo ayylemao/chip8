@@ -2,5 +2,5 @@
 
 Not yet implemented:
 * Sound
-Dependecies:
+Dependencies:
 * SFML-2.6
