@@ -16,8 +16,9 @@ struct CPU
     Word I;
     Word PC;
     Byte SP;
-    Byte DT;
+    Byte DT = 0;
     Byte ST;
+    uint32_t ticks = 0;
     bool redraw;
     void reset(Memory& memory);
     Word fetch(Memory& memory);
@@ -25,6 +26,9 @@ struct CPU
     std::random_device rd;
     Byte randByte();
     void loadSprites(Memory& memory);
+
+    // Keyboard
+    bool keyboard[16];
 
     // OPCODES:
     static constexpr Word SYS_addr = 0x0000;
@@ -53,7 +57,7 @@ struct CPU
     static constexpr Word RND_Vx = 0xC000;
     static constexpr Word DRW_VxVy = 0xD000;
     static constexpr Word KEY_OPS = 0xE000;
-    static constexpr Word SKP_Vx = 0xE093;
+    static constexpr Word SKP_Vx = 0xE09E;
     static constexpr Word SKNP_Vx = 0xE0A1;
     static constexpr Word DTST_OPS = 0xF000;
     static constexpr Word LD_VxDT = 0xF007;

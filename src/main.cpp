@@ -22,7 +22,7 @@ int main()
     cpu.reset(memory);
     cpu.loadSprites(memory);
     std::vector<Byte> rom = utils::loadROM(
-        "/home/matthias/projects/chip8/roms/4-flags.ch8"
+        "/home/matthias/projects/chip8/roms/6-keypad.ch8"
         );
 
     for (int addr = 0; addr < rom.size(); addr++)
@@ -44,7 +44,7 @@ int main()
                 window.close();
         }
         window.clear();
-        if (clock.getElapsedTime().asSeconds() >= 0.001)
+        if (clock.getElapsedTime().asSeconds() >= 0.00185)
         {
             clock.restart();  // Reset the clock
             //utils::printOpcode(memory[cpu.PC], memory[cpu.PC+1]);
@@ -52,6 +52,9 @@ int main()
             //utils::printWord(cpu.I);
             cpu.execute(memory);
         }
+        // KeyPresses
+        renderer.checkKeyPress();
+
         sf::Texture texture;
         if (cpu.redraw == true)
         {

@@ -1,4 +1,5 @@
 #include "../include/renderer.h"
+#include "renderer.h"
 
 Renderer::Renderer(sf::RenderWindow &in_window, CPU &in_cpu) 
 : window(in_window), cpu(in_cpu)
@@ -25,5 +26,13 @@ void Renderer::drawBuffer()
         {
             image.setPixel(x, y, sf::Color::Black);
         }
+    }
+}
+
+void Renderer::checkKeyPress()
+{
+    for (int i = 0; i < 16; i++)
+    {
+        cpu.keyboard[i] = sf::Keyboard::isKeyPressed(hexkeys[i]);
     }
 }

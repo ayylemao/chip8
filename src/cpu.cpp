@@ -8,6 +8,7 @@ void CPU::reset(Memory& memory)
     for (int i = 0; i<NREG; i++)
     {
         V[i] = 0x0;
+        keyboard[i] = false;
     }
     PC = 0x200;
     SP = 0x0;
@@ -59,6 +60,11 @@ void CPU::execute(Memory& memory)
     Word N;
     Byte pixelByte;
     bool pixel;
+    ticks += 1;
+    if ((ticks % 9 == 0) & (DT > 0))
+    {
+        DT -= 1;
+    }
 
     switch (ins)
     {
@@ -219,17 +225,29 @@ void CPU::execute(Memory& memory)
 
         break;
     case KEY_OPS:
-        switch (ins & 0xF00F)
+        switch (ins & 0xF0FF)
         {
         case SKP_Vx:
-            // TODO:
             //  Skip next instruction if key with the value of Vx is pressed.
-            std::cout << "Not Implemented SKP_Vx\n";
+            if (V[Vx] <= 0xF)
+            {
+                if (keyboard[V[Vx]])
+                {
+                    PC++;
+                    PC++;
+                }
+            }
             break;
         case SKNP_Vx:
-            // TODO:
             // Skip next instruction if key with the value of Vx is not pressed. 
-            std::cout << "Not Implemented SKNP_Vx\n";
+            if (V[Vx] <= 0xF)
+            {
+                if (!keyboard[V[Vx]])
+                {
+                    PC++;
+                    PC++;
+                }
+            }
             break;
         default:
             break;
@@ -239,19 +257,25 @@ void CPU::execute(Memory& memory)
         switch (ins & 0xF0FF)
         {
         case LD_VxDT:
-            // TODO:
             // Set Vx = delay timer value.
-            std::cout << "Not Implemented LD_VxDT\n";
+            V[Vx] = DT;
             break;
         case LD_Vx_K:
-            // TODO:
             // Wait for a key press, store the value of the key in Vx.
-            std::cout << "Not Implemented LD_Vx_K\n";
+            for (int i = 0; i < 16; i++)
+            {
+                if (keyboard[i])
+                {
+                    V[Vx] = i;
+                    break;
+                }
+            }
+            PC--;
+            PC--;
             break;
         case LD_DTVx:
-            // TODO:
             // Set delay timer = Vx.
-            std::cout << "Not Implemented LD_DTVx\n";
+            DT = V[Vx];
             break;
         case LD_STVx:
             // TODO:
@@ -259,7 +283,6 @@ void CPU::execute(Memory& memory)
             std::cout << "Not Implemented LD_STVx\n";
             break;
         case ADD_IVx:
-            // TODO:
             // Set I = I + Vx.
             I = I + V[Vx];
             break;
@@ -269,14 +292,12 @@ void CPU::execute(Memory& memory)
             std::cout << "Not Implemented LD_FVx\n";
             break;
         case LD_BVx:
-            // TODO:
             // Store BCD representation of Vx in memory locations I, I+1, and I+2.
             memory[I] = V[Vx] / 100;
             memory[I + 1] = (V[Vx] / 10) % 10;
             memory[I + 2] = (V[Vx] % 10);
             break;
         case LD_STO_IVx:
-            // TODO:
             // Store registers V0 through Vx in memory starting at location I.
             for (int i = 0; i<= Vx; i++)
             {
